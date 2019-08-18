@@ -22,7 +22,7 @@ defmodule TgScrumPoker.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_gram, "~> 0.7.0"},
+      {:ex_gram, "0.6.2"},
       {:jason, "~> 1.1"},
       {:gproc, "0.8.0"}
     ]
