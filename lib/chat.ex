@@ -2,7 +2,11 @@ defmodule TgScrumPoker.Chat do
   use GenServer
 
   defmodule Story do
-    defstruct text: "", votes: []
+    defstruct text: "", votes: %{}
+  end
+
+  defmodule Vote do
+    defstruct user_id: 0, name: "", score: 0
   end
 
   def start_link(id) do
@@ -21,8 +25,8 @@ defmodule TgScrumPoker.Chat do
     GenServer.call(via_tuple(id), :get_story)
   end
 
-  def vote_story(id, score) do
-    GenServer.cast(via_tuple(id), {:vote, score})
+  def vote_story(id, vote) do
+    GenServer.cast(via_tuple(id), {:vote, vote})
   end
 
   def init(story) do
@@ -33,8 +37,8 @@ defmodule TgScrumPoker.Chat do
     {:noreply, story}
   end
 
-  def handle_cast({:vote, score}, %{votes: votes} = story) do
-    {:noreply, %{story | votes: [score | votes]}}
+  def handle_cast({:vote, %{user_id: user_id} = vote}, %{votes: votes} = story) do
+    {:noreply, %{story | votes: Map.update(votes, user_id, vote, fn _ -> vote end)}}
   end
 
   def handle_call(:get_story, _from, story) do
