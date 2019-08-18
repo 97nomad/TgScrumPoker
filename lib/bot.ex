@@ -54,7 +54,7 @@ defmodule TgScrumPoker.Bot do
     TgScrumPoker.Chat.vote_story(id, %TgScrumPoker.Chat.Vote{
       user_id: user.id,
       name: TgScrumPoker.Utils.extract_name(user),
-      score: score
+      score: TgScrumPoker.Poker.round_up(score)
     })
   end
 end
