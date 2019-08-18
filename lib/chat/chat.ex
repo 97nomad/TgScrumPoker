@@ -1,5 +1,5 @@
 defmodule TgScrumPoker.Chat do
-  use GenServer
+  use GenServer, restart: :temporary
 
   defmodule Story do
     defstruct text: "", votes: %{}

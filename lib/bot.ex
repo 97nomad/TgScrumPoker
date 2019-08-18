@@ -6,16 +6,12 @@ defmodule TgScrumPoker.Bot do
 
   def bot(), do: @bot_name
 
-  def handle({:message, msg}, context) do
-    Logger.info(~s"Some strange message #{inspect(msg)}")
-    context
-  end
-
   def handle({:command, "start", msg}, context) do
     context |> delete(msg) |> answer("Hello, sweety!")
   end
 
   def handle({:command, "story", %{chat: %{id: id}, text: text} = msg}, context) do
+    Logger.info(~s"Start story #{text} for chat #{id}")
     TgScrumPoker.Chat.Supervisor.start_chat(id)
     TgScrumPoker.Chat.start_story(id, %TgScrumPoker.Chat.Story{text: text})
 
@@ -35,7 +31,8 @@ defmodule TgScrumPoker.Bot do
     end
   end
 
-  def handle({:command, "end", %{chat: %{id: id}} = msg}, context) do
+  def handle({:command, "end", %{chat: %{id: id}, text: text} = msg}, context) do
+    Logger.info(~s"End story #{text} for chat #{id}")
     %{text: text, votes: votes} = TgScrumPoker.Chat.get_story(id)
 
     message =
