@@ -1,8 +1,12 @@
 defmodule TgScrumPoker.Chat do
   use GenServer
 
+  defmodule Story do
+    defstruct text: "", votes: []
+  end
+
   def start_link(id) do
-    GenServer.start_link(__MODULE__, {"", []}, name: via_tuple(id))
+    GenServer.start_link(__MODULE__, %Story{}, name: via_tuple(id))
   end
 
   defp via_tuple(id) do
@@ -27,6 +31,10 @@ defmodule TgScrumPoker.Chat do
 
   def handle_cast({:start_story, story}, _) do
     {:noreply, story}
+  end
+
+  def handle_cast({:vote, score}, %{votes: votes} = story) do
+    {:noreply, %{story | votes: [score | votes]}}
   end
 
   def handle_call(:get_story, _from, story) do
