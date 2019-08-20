@@ -24,7 +24,8 @@ defmodule TgScrumPoker.MixProject do
     [
       {:ex_gram, "~> 0.7.1"},
       {:jason, "~> 1.1"},
-      {:gproc, "0.8.0"}
+      {:gproc, "0.8.0"},
+      {:distillery, "~> 2.1"}
     ]
   end
 end
