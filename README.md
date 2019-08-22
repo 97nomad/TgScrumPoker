@@ -1,21 +1,20 @@
 # TgScrumPoker
 
-**TODO: Add description**
+Бот для покера планирования (Scrum Poker)
 
-## Installation
+Живёт по адресу http://t.me/nommy_scrum_poker_bot
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `tg_scrum_poker` to your list of dependencies in `mix.exs`:
+## Использование
 
-```elixir
-def deps do
-  [
-    {:tg_scrum_poker, "~> 0.1.0"}
-  ]
-end
-```
+1. Добавить в групповой чат
+2. Дать админские права на удаление сообщений (необязательно)
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/tg_scrum_poker](https://hexdocs.pm/tg_scrum_poker).
+* `/story текст_истории` - начать голосование за историю
+* любая цифра - голосование за историю
+* `/end` - отображение статистики
 
+## Особенности работы
+
+* Для подсчёта очков используется последовательность Фибоначчи
+* При голосовании число округляется до ряда Фибоначчи в большую сторону
+* Результат всегда округляется до ряда Фибоначчи в большую сторону
