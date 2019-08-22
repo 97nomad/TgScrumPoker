@@ -38,7 +38,7 @@ defmodule TgScrumPoker.Chat do
   end
 
   def handle_cast({:vote, %{user_id: user_id} = vote}, %{votes: votes} = story) do
-    {:noreply, %{story | votes: Map.update(votes, user_id, vote, fn _ -> vote end)}}
+    {:noreply, %{story | votes: Map.put(votes, user_id, vote)}}
   end
 
   def handle_call(:get_story, _from, story) do
