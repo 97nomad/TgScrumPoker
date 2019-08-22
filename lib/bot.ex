@@ -4,6 +4,8 @@ defmodule TgScrumPoker.Bot do
   use ExGram.Bot, name: @bot_name
   require Logger
 
+  middleware(ExGram.Middleware.IgnoreUsername)
+
   def bot(), do: @bot_name
 
   def handle({:command, "start", msg}, context) do
