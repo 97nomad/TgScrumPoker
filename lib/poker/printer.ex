@@ -1,13 +1,20 @@
 defmodule TgScrumPoker.Printer do
   def result(votes, text) do
-    max_score = votes |> Enum.max_by(fn vote -> vote.score end)
-    min_score = votes |> Enum.min_by(fn vote -> vote.score end)
     scores = votes |> Enum.map(fn vote -> vote.score end)
+    integer_votes = votes |> Enum.filter(fn x -> is_integer(x.score) end)
+    integer_scores = scores |> Enum.filter(&is_integer(&1))
+
+    max_score = integer_votes |> Enum.max_by(fn x -> x.score end, fn -> :empty end)
+    min_score = integer_votes |> Enum.min_by(fn x -> x.score end, fn -> :empty end)
 
     total =
-      (Enum.sum(scores) / Enum.count(scores))
-      |> Kernel.trunc()
-      |> TgScrumPoker.Poker.round_up()
+      unless Enum.empty?(integer_scores) do
+        (Enum.sum(integer_scores) / Enum.count(integer_scores))
+        |> Kernel.trunc()
+        |> TgScrumPoker.Poker.round_up()
+      else
+        0
+      end
 
     [
       ~s"*\"#{text}\"*",
@@ -15,11 +22,25 @@ defmodule TgScrumPoker.Printer do
       ~s"#{votes(votes)}",
       "",
       ~s"Средняя оценка: *#{total}*",
-      "",
-      ~s"🡅 #{max_score.name}: #{max_score.score}",
-      ~s"🡇 #{min_score.name}: #{min_score.score}"
+      ""
     ]
+    |> add_max_score(max_score)
+    |> add_min_score(min_score)
     |> Enum.join("\n")
+  end
+
+  defp add_max_score(array, vote) do
+    case vote do
+      :empty -> array
+      %{name: name, score: score} -> array ++ [~s"🡅 #{name}: #{score}"]
+    end
+  end
+
+  defp add_min_score(array, vote) do
+    case vote do
+      :empty -> array
+      %{name: name, score: score} -> array ++ [~s"🡇 #{name}: #{score}"]
+    end
   end
 
   def start_story(text) do
@@ -33,6 +54,14 @@ defmodule TgScrumPoker.Printer do
   end
 
   def vote(%{name: name, score: score}) do
-    ~s"#{name}: #{score}"
+    symbol =
+      case score do
+        _ when is_integer(score) -> "#{score}"
+        :coffee -> "☕️"
+        :question -> "❔"
+        :infinity -> "♾️"
+      end
+
+    ~s"#{name}: #{symbol}"
   end
 end
