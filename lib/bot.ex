@@ -23,13 +23,13 @@ defmodule TgScrumPoker.Bot do
   end
 
   def handle({:text, text, %{chat: %{id: id}} = msg}, context) do
-    case Integer.parse(text) do
-      {score, _} ->
-        vote_score(id, score, msg)
-        context |> delete(msg)
-
+    case parse_score(text) do
       :error ->
         context
+
+      result ->
+        vote_score(id, result, msg)
+        context |> delete(msg)
     end
   end
 
@@ -53,7 +53,29 @@ defmodule TgScrumPoker.Bot do
     TgScrumPoker.Chat.vote_story(id, %TgScrumPoker.Chat.Vote{
       user_id: user.id,
       name: TgScrumPoker.Utils.extract_name(user),
-      score: TgScrumPoker.Poker.round_up(score)
+      score: score
     })
+  end
+
+  defp parse_score(score) do
+    maybe_score = Integer.parse(score)
+
+    case score do
+      "?" ->
+        :question
+
+      "coffee" ->
+        :coffee
+
+      "inf" ->
+        :infinity
+
+      _ when maybe_score != :error ->
+        {score, _} = maybe_score
+        TgScrumPoker.Poker.round_up(score)
+
+      _ ->
+        :error
+    end
   end
 end
