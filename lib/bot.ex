@@ -33,6 +33,16 @@ defmodule TgScrumPoker.Bot do
     end
   end
 
+  def handle({:command, "coffee", %{chat: %{id: id}} = msg}, context) do
+    vote_score(id, :coffee, msg)
+    context |> delete(msg)
+  end
+
+  def handle({:command, "infinity", %{chat: %{id: id}} = msg}, context) do
+    vote_score(id, :infinity, msg)
+    context |> delete(msg)
+  end
+
   def handle({:command, "end", %{chat: %{id: id}, text: text} = msg}, context) do
     Logger.info(~s"End story #{text} for chat #{id}")
     %{text: text, votes: votes} = TgScrumPoker.Chat.get_story(id)
