@@ -1,6 +1,10 @@
 defmodule TgScrumPoker.Bot do
   @bot_name :tg_scrum_poker
 
+  alias TgScrumPoker.Printer
+  alias TgScrumPoker.Chat
+  alias TgScrumPoker.Poker
+
   use ExGram.Bot, name: @bot_name
   require Logger
 
@@ -9,21 +13,21 @@ defmodule TgScrumPoker.Bot do
   def bot(), do: @bot_name
 
   def handle({:command, "start", msg}, context) do
-    context |> delete(msg) |> answer(TgScrumPoker.Printer.help())
+    context |> delete(msg) |> answer(Printer.help())
   end
 
   def handle({:command, "help", msg}, context) do
-    context |> delete(msg) |> answer(TgScrumPoker.Printer.help())
+    context |> delete(msg) |> answer(Printer.help())
   end
 
   def handle({:command, "story", %{chat: %{id: id}, text: text} = msg}, context) do
     Logger.info(~s"Start story #{text} for chat #{id}")
-    TgScrumPoker.Chat.Supervisor.start_chat(id)
-    TgScrumPoker.Chat.start_story(id, %TgScrumPoker.Chat.Story{text: text})
+    Chat.Supervisor.start_chat(id)
+    Chat.start_story(id, %Chat.Story{text: text})
 
     context
     |> delete(msg)
-    |> answer(TgScrumPoker.Printer.start_story(text), parse_mode: "markdown")
+    |> answer(Printer.start_story(text), parse_mode: "markdown")
   end
 
   def handle({:text, text, %{chat: %{id: id}} = msg}, context) do
@@ -49,12 +53,12 @@ defmodule TgScrumPoker.Bot do
 
   def handle({:command, "end", %{chat: %{id: id}, text: text} = msg}, context) do
     Logger.info(~s"End story #{text} for chat #{id}")
-    %{text: text, votes: votes} = TgScrumPoker.Chat.get_story(id)
+    %{text: text, votes: votes} = Chat.get_story(id)
 
     message =
       votes
       |> Map.values()
-      |> TgScrumPoker.Printer.result(text)
+      |> Printer.result(text)
 
     context
     |> delete(msg)
@@ -64,7 +68,7 @@ defmodule TgScrumPoker.Bot do
   defp vote_score(id, score, msg) do
     {:ok, user} = extract_user(msg)
 
-    TgScrumPoker.Chat.vote_story(id, %TgScrumPoker.Chat.Vote{
+    Chat.vote_story(id, %Chat.Vote{
       user_id: user.id,
       name: TgScrumPoker.Utils.extract_name(user),
       score: score
@@ -86,7 +90,7 @@ defmodule TgScrumPoker.Bot do
 
       _ when maybe_score != :error ->
         {score, _} = maybe_score
-        TgScrumPoker.Poker.round_up(score)
+        Poker.round_up(score)
 
       _ ->
         :error
