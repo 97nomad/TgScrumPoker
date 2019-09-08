@@ -9,7 +9,11 @@ defmodule TgScrumPoker.Bot do
   def bot(), do: @bot_name
 
   def handle({:command, "start", msg}, context) do
-    context |> delete(msg) |> answer("Hello, sweety!")
+    context |> delete(msg) |> answer(TgScrumPoker.Printer.help())
+  end
+
+  def handle({:command, "help", msg}, context) do
+    context |> delete(msg) |> answer(TgScrumPoker.Printer.help())
   end
 
   def handle({:command, "story", %{chat: %{id: id}, text: text} = msg}, context) do
