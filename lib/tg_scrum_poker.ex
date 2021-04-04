@@ -6,12 +6,12 @@ defmodule TgScrumPoker do
   import Supervisor.Spec
 
   def start(_type, _args) do
-    token = ExGram.Config.get(:tg_scrum_poker, :token)
+    token = System.get_env("TG_BOT_TOKEN")
 
     children = [
       supervisor(TgScrumPoker.Chat.Supervisor, []),
       supervisor(ExGram, []),
-      supervisor(TgScrumPoker.Bot, [:polling, token])
+      {TgScrumPoker.Bot, [method: :polling, token: token]}
     ]
 
     opts = [strategy: :one_for_one, name: TgScrumPoker]
