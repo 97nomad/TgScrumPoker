@@ -19,3 +19,30 @@
 * Для подсчёта очков используется последовательность Фибоначчи
 * При голосовании число округляется до ряда Фибоначчи в большую сторону
 * Результат всегда округляется до ряда Фибоначчи в большую сторону
+
+## Запуск и конфигурация
+
+### NixOS with Flakes
+```
+inputs = [
+   tg_scrum_poker.url = "github:97nomad/TgScrumPoker";
+];
+
+// ...
+
+services.tgScrumPoker = {
+	enable = true;
+	token = "insert token here";
+};
+```
+
+### Systemd
+```
+[Unit]
+
+[Service]
+Environment="TG_BOT_TOKEN="insert token here"
+
+ExecStart=/bin/tg_scrum_poker start
+ExecStop=/bin/tg_scrum_poker stop
+```
