@@ -19,7 +19,7 @@
         src = ./.;
         mixNixDeps = deps;
 
-        buildInputs = with pkgs; [ erlang libudev ncurses6 zlib openssl ];
+        buildInputs = with pkgs; [ erlang libudev ncurses5 zlib openssl ];
       };
 
       nixosModule = { config, ... }: with nixpkgs.lib; {
@@ -43,7 +43,7 @@
             };
             environment = {
               TG_BOT_TOKEN = config.services.tgScrumPoker.token;
-              LD_LIBRARY_PATH = with pkgs; makeLibraryPath [ erlang libudev ncurses6 zlib openssl self.defaultPackage."${system}" ];
+              LD_LIBRARY_PATH = with pkgs; makeLibraryPath [ erlang libudev ncurses5 zlib openssl self.defaultPackage."${system}" ];
             };
           };
         };
