@@ -4,26 +4,22 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-
-    tg_scrum_poker.url = https://github.com/97nomad/TgScrumPoker/releases/download/0.3.0/tg_scrum_poker-0.3.0.tar.gz;
-    tg_scrum_poker.flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, tg_scrum_poker }:
+  outputs = { self, nixpkgs, flake-utils }:
     let out = system:
-    let pkgs = nixpkgs.legacyPackages."${system}";
+    let
+      pkgs = nixpkgs.legacyPackages."${system}";
+      deps = with nixpkgs; import ./deps.nix { inherit lib; beamPackages = pkgs.beamPackages; };
     in {
-      defaultPackage = pkgs.stdenv.mkDerivation {
+      defaultPackage = pkgs.beamPackages.mixRelease rec {
         version = "0.3.0";
-        name = "TgScrumPoker";
-        src = tg_scrum_poker;
+        pname = "TgScrumPoker";
+        mixEnv = "prod";
+        src = ./.;
+        mixNixDeps = deps;
 
         buildInputs = with pkgs; [ erlang libudev ncurses6 zlib openssl ];
-
-        installPhase = ''
-            mkdir $out
-            cp -r ./* $out
-          '';
       };
 
       nixosModule = { config, ... }: with nixpkgs.lib; {
@@ -56,6 +52,8 @@
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
           elixir
+          elixir_ls
+          mix2nix
         ];
       };
     }; in with flake-utils.lib; eachSystem defaultSystems out;
